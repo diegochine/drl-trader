@@ -7,11 +7,11 @@ from histdata import download_hist_data as dl
 
 
 def get_symbols(size=10):
-    return open('symbols.txt', 'r').read().split('\n')[:size]
+    return open('../symbols.txt', 'r').read().split('\n')[:size]
 
 
 def get_pairs(size=10):
-    return open('pairs.txt', 'r').read().split('\n')[:size]
+    return open('../pairs.txt', 'r').read().split('\n')[:size]
 
 
 def download_data(pair, year):
@@ -28,6 +28,7 @@ def download_data(pair, year):
     else:
         print(f'{pair} {year} already present')
 
+
 def get_data(pairs=['EURUSD'], years=list(range(2010, 2018))):
     header = ['Timestamp', 'Bar OPEN Bid Quote', 'Bar HIGH Bid Quote',
               'Bar LOW Bid Quote', 'Bar CLOSE Bid Quote', 'Volume']
@@ -40,21 +41,21 @@ def get_data(pairs=['EURUSD'], years=list(range(2010, 2018))):
         if not os.path.exists(dir):
             os.mkdir(dir)
         for year in years:
-                try:
-                    download_data(pair, year)
-                except AssertionError:
-                    print(f'{pair} {year} no data available')
-                    continue
-                df = pd.read_csv(dir + f'{year}.csv', sep=';', names=header)
-                ts = df.iloc[:, 0].apply(lambda s: f'{s[:4]}-{s[4:6]}-{s[6:8]}T{s[9:11]}:{s[11:13]}')
-                ts = pd.to_datetime(ts)
-                df.iloc[:, 0] = ts
-                df[sym1] = True
-                df[sym2] = True
-                for sym in symbols:
-                    if (sym != sym1) and (sym != sym2):
-                        df[sym] = False
-                dfs.append(df)
+            try:
+                download_data(pair, year)
+            except AssertionError:
+                print(f'{pair} {year} no data available')
+                continue
+            df = pd.read_csv(dir + f'{year}.csv', sep=';', names=header)
+            ts = df.iloc[:, 0].apply(lambda s: f'{s[:4]}-{s[4:6]}-{s[6:8]}T{s[9:11]}:{s[11:13]}')
+            ts = pd.to_datetime(ts)
+            df.iloc[:, 0] = ts
+            df[sym1] = True
+            df[sym2] = True
+            for sym in symbols:
+                if (sym != sym1) and (sym != sym2):
+                    df[sym] = False
+            dfs.append(df)
     df = pd.concat(dfs)
     df.drop(columns='Volume', inplace=True)
     df.set_index('Timestamp', inplace=True)
