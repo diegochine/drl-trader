@@ -20,7 +20,7 @@ class ForexEnvironment(gym.Env):
         self.time_step = time_step
 
         # action_space normalization and shape is STOCK_DIM
-        self.action_space = spaces.Box(low=-1, high=1, shape=(cfg.PAIRS_DIM,))
+        self.action_space = spaces.Box(low=-1, high=1, shape=(cfg.ACTION_SHAPE,))
 
         self.observation_space = spaces.Box(low=0, high=np.inf, shape=(cfg.SPACE_SHAPE,))
         # load data from a pandas dataframe
@@ -44,6 +44,13 @@ class ForexEnvironment(gym.Env):
         # self.reset()
         self._seed()
 
+    def _get_profit(self, trade, start_price, end_price):
+        pips_var = end_price - start_price
+        vol, pips = trade
+
+
+        pass
+
     def step(self, actions):
         print(self.time_step)
         self.terminal = self.time_step >= len(self.df.index.unique()) - 1
@@ -51,13 +58,39 @@ class ForexEnvironment(gym.Env):
 
         if not self.terminal:
             # actions = actions * HMAX_NORMALIZE
-            # TODO modificare secondo discorso pips
+
+            trades = self.state[(cfg.PAIRS_DIM + 1):]
             begin_total_asset = self.state[0] + \
-                                sum(np.array(self.state[1:(cfg.PAIRS_DIM + 1)]) * np.array(
-                                    self.state[(cfg.PAIRS_DIM + 1):(cfg.PAIRS_DIM * 2 + 1)]))
+                                np.sum([vol * pips * 10 for vol, pips in zip(trades[::2], trades[1::2])])
             print("begin_total_asset:{}".format(begin_total_asset))
+
+            # TODO exec action
+            # TODO update balance only if the action is closing
+            # next timestep, update pips and state
+            self.time_step += 1
+            self.data = self.df.loc[self.time_step, :]
+            # load next state
+            self.state = [self.state[0]] + \
+                         self.data.close.values.tolist() + \
+                         list(self.state[(cfg.PAIRS_DIM + 1):])
+
+            # end_total_asset
+            trades = self.state[cfg.PAIRS_DIM + 1:]
+            end_total_asset = self.state[0] + \
+                                np.sum([vol * pips * 10 for vol, pips in zip(trades[::2], trades[1::2])])
+
+            self.asset_memory.append(end_total_asset)
+            print("end_total_asset:{}".format(end_total_asset))
+            self.reward = end_total_asset - begin_total_asset
+            print("step_reward:{}".format(self.reward))
+            self.rewards_memory.append(self.reward)
+
+            # self.reward = self.reward * REWARD_SCALING(1e-4)
+
         else:
             pass
+
+        return self.state, self.reward, self.terminal, {}
 
     def reset(self):
         self.asset_memory = [cfg.INITIAL_BALANCE]

@@ -9,3 +9,4 @@ MAX_TRADES = 5
 # + [open trades 1-PAIRS_DIM * MAX_TRADES
 #   and each trade is pair of two numbers representing volume(real) and pips(int)]
 SPACE_SHAPE = 1 + PAIRS_DIM + MAX_TRADES*PAIRS_DIM*2
+ACTION_SHAPE = MAX_TRADES*PAIRS_DIM
