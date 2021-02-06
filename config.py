@@ -3,6 +3,7 @@ HEADERS = ['Timestamp', 'open', 'high', 'low', 'close', 'volume']
 
 # ENV
 INITIAL_BALANCE = 1000
+SPREAD_BROKER = -1
 PAIRS_DIM = 1
 MAX_TRADES = 5
 # Shape = 181: [Current Balance] + [prices 1-PAIRS_DIM]
