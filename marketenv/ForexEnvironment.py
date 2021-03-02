@@ -1,10 +1,13 @@
 import numpy as np
 import pandas as pd
-from gym.utils import seeding
 import gym
+from gym.utils import seeding
 from gym import spaces
 import matplotlib
-matplotlib.use('Agg') # boh, verificare
+
+from marketenv.TradingEnvironment import TradingEnvironment
+
+matplotlib.use('Agg')  # boh, verificare
 import matplotlib.pyplot as plt
 import pickle
 import config as cfg
@@ -29,10 +32,10 @@ class ForexEnvironment(TradingEnvironment):
         self.state = [cfg.INITIAL_BALANCE] + \
                      self.data.close.values.tolist() + \
                      [0] * (cfg.MAX_TRADES * cfg.PAIRS_DIM * 2)
-                     #self.data.macd.values.tolist() + \
-                     #self.data.rsi.values.tolist() + \
-                     #self.data.cci.values.tolist() + \
-                     #self.data.adx.values.tolist()
+        # self.data.macd.values.tolist() + \
+        # self.data.rsi.values.tolist() + \
+        # self.data.cci.values.tolist() + \
+        # self.data.adx.values.tolist()
         # initialize reward
         self.reward = 0
         self.cost = 0
@@ -109,7 +112,7 @@ class ForexEnvironment(TradingEnvironment):
             # end_total_asset
             trades = self.state[cfg.PAIRS_DIM + 1:]
             end_total_asset = self.state[0] + \
-                                np.sum([vol * pips * 10 for vol, pips in zip(trades[::2], trades[1::2])])
+                              np.sum([vol * pips * 10 for vol, pips in zip(trades[::2], trades[1::2])])
 
             self.asset_memory.append(end_total_asset)
             print("end_total_asset:{}".format(end_total_asset))
@@ -132,7 +135,7 @@ class ForexEnvironment(TradingEnvironment):
         trades = self.state[cfg.PAIRS_DIM + 1:]
         open_trades = np.argwhere(trades[::2] != 0)
         for idx in open_trades:
-            self.state[cfg.PAIRS_DIM + 1 + idx + 1] += pips_diff[idx//cfg.MAX_TRADES*2]
+            self.state[cfg.PAIRS_DIM + 1 + idx + 1] += pips_diff[idx // cfg.MAX_TRADES * 2]
 
     def reset(self):
         self.asset_memory = [cfg.INITIAL_BALANCE]
@@ -146,10 +149,10 @@ class ForexEnvironment(TradingEnvironment):
         self.state = [cfg.INITIAL_BALANCE] + \
                      self.data.close.values.tolist() + \
                      [0] * (cfg.MAX_TRADES * cfg.PAIRS_DIM * 2)
-                     # self.data.macd.values.tolist() + \
-                     # self.data.rsi.values.tolist() + \
-                     # self.data.cci.values.tolist() + \
-                     # self.data.adx.values.tolist()
+        # self.data.macd.values.tolist() + \
+        # self.data.rsi.values.tolist() + \
+        # self.data.cci.values.tolist() + \
+        # self.data.adx.values.tolist()
         # iteration += 1
         return self.state
 
