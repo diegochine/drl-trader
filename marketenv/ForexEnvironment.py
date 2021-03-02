@@ -28,8 +28,8 @@ class ForexEnvironment(TradingEnvironment):
         self.observation_space = spaces.Box(low=0, high=np.inf, shape=(cfg.SPACE_SHAPE,))
 
         # load data from a pandas dataframe
-        self.time_step = 0
-        self.prices = self.df.loc[self.time_step, :]
+        self.time_step = cfg.TICKS_OBS
+        self.prices = self.df.iloc[:self.time_step, :]
         self.terminal = False
 
         # initalize state
@@ -78,8 +78,8 @@ class ForexEnvironment(TradingEnvironment):
 
     def reset(self):
         self.asset_memory = [cfg.INITIAL_BALANCE]
-        self.time_step = 0
-        self.prices = self.df.loc[self.time_step, :]
+        self.time_step = cfg.TICKS_OBS
+        self.prices = self.df.iloc[:self.time_step, :]
         self.terminal = False
         self.rewards_memory = []
         self.state = State(self.prices.close.values.tolist())
