@@ -5,7 +5,7 @@ from gym.utils import seeding
 from gym import spaces
 import matplotlib
 
-from marketenv.TradingEnvironment import TradingEnvironment
+from marketenv import TradingEnvironment, State
 
 matplotlib.use('Agg')  # boh, verificare
 import matplotlib.pyplot as plt
@@ -104,9 +104,7 @@ class ForexEnvironment(TradingEnvironment):
             self.time_step += 1
             self.data = self.df.loc[self.time_step, :]
             # load next state
-            self.state = [self.state[0]] + \
-                         self.data.close.values.tolist() + \
-                         list(self.state[(cfg.PAIRS_DIM + 1):])
+            self.state = State()
             self._update_pips_variance()
 
             # end_total_asset
