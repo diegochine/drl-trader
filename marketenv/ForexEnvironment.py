@@ -4,20 +4,19 @@ from gym.utils import seeding
 import gym
 from gym import spaces
 import matplotlib
-matplotlib.use('Agg')
+matplotlib.use('Agg') # boh, verificare
 import matplotlib.pyplot as plt
 import pickle
 import config as cfg
 
 
-class ForexEnvironment(gym.Env):
+class ForexEnvironment(TradingEnvironment):
     metadata = {'render.modes': ['human']}
 
-    def __init__(self, df, time_step=0):
-        super(ForexEnvironment, self).__init__()
+    def __init__(self, df, window_size):
+        super().__init__(df, window_size)
 
-        self.df = df
-        self.time_step = time_step
+        self.trade_fee = 0.0003  # unit
 
         # action_space normalization and shape is STOCK_DIM
         self.action_space = spaces.Box(low=-1, high=1, shape=(cfg.ACTION_SHAPE,))
