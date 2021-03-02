@@ -16,9 +16,10 @@ import config as cfg
 class ForexEnvironment(TradingEnvironment):
     metadata = {'render.modes': ['human']}
 
-    def __init__(self, df, window_size):
-        super().__init__(df, window_size)
+    def __init__(self, df):
+        super().__init__(df)
 
+        self.state = State(prices)
         self.trade_fee = 0.0003  # unit
 
         # action_space normalization and shape is STOCK_DIM

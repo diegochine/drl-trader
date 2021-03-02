@@ -1,14 +1,20 @@
 import gym
 
+from marketenv.State import State
+
 
 class TradingEnvironment(gym.Env):
 
     metadata = {'render.modes': ['human']}
 
-    def __init__(self, df, window_size):
+    def __init__(self, df):
         self.df = df
-        self.window_size = window_size
-        self.prices, self.signal_features = self._process_data()
+
+    def reset(self):
+        raise NotImplementedError
+
+    def step(self, action):
+        raise NotImplementedError
 
     def _process_data(self):
         raise NotImplementedError
