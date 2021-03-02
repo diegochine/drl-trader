@@ -23,9 +23,9 @@ class ForexEnvironment(TradingEnvironment):
         self.trade_fee = 0.0003  # unit
 
         # action_space normalization and shape is STOCK_DIM
-        self.action_space = spaces.Box(low=-1, high=1, shape=(cfg.ACTION_SHAPE,))
+        self.action_space = spaces.Box(low=-cfg.MAX_LOTS, high=cfg.MAX_LOTS, shape=cfg.ACTION_SHAPE, dtype=np.int)
 
-        self.observation_space = spaces.Box(low=0, high=np.inf, shape=(cfg.SPACE_SHAPE,))
+        self.observation_space = spaces.Box(low=0, high=np.inf, shape=cfg.SPACE_SHAPE)
 
         # load data from a pandas dataframe
         self.time_step = cfg.TICKS_OBS
@@ -56,9 +56,9 @@ class ForexEnvironment(TradingEnvironment):
 
             # next timestep, update pips and state
             self.time_step += 1
-            self.prices = self.df.loc[self.time_step, :]
+            self.prices = self.df.iloc[self.time_step, :]
             # load next state
-            self.state.next_timestep(self.prices.close.values.tolist())
+            self.state.next_timestep(self.prices.close.tolist())
 
             end_total_asset = self.state.compute_asset_value()
 

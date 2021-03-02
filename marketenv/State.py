@@ -50,7 +50,7 @@ class State:
             self._open_trade(idx, actions[idx])
 
     def next_timestep(self, prices):
-        self.prices.extendleft(prices)
+        self.prices.appendleft(prices)
         # TODO updates trades
         before = self.prices[1]
         after = self.prices[0]
